@@ -84,12 +84,6 @@ public class User {
             // Cont curent
             account = new CurrentAccount(this, bank);
 
-            // Deschiderea unui cont curent presupune atasarea automata a unui
-            // card de credit pentru care vom genera un cod de 15 cifre
-            //Long cardNumber = ((CurrentAccount) account).generateCardNumber();
-            //CreditCard creditCard = new CreditCard(cardNumber.toString(), "", 0f, (CurrentAccount) account);
-            //((CurrentAccount) account).setCreditCard(creditCard);
-            //System.out.println("Luhn key long from user: " + cardNumber);
         }
 
         // Adaugam contul la lista de conturi deschise de utilizatorul curent

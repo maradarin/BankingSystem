@@ -1,4 +1,4 @@
-package BankingSystem;
+package SystemManagement;
 
 import javax.xml.crypto.Data;
 import java.util.Scanner;

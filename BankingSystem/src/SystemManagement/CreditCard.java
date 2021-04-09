@@ -1,4 +1,4 @@
-package BankingSystem;
+package SystemManagement;
 
 import java.text.ParseException;
 import java.util.Scanner;

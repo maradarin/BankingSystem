@@ -1,4 +1,4 @@
-package BankingSystem;
+package SystemManagement;
 
 import jdk.jshell.execution.Util;
 
@@ -47,9 +47,9 @@ abstract public class DataBase {
         Bank bank = getBankByNames(bankName, countryName);
         List<User> clients = bank.getClients();
         User user = clients.stream()
-                    .filter(client -> CNP.equals(client.getCNP()))
-                    .findAny()
-                    .orElse(null);
+                .filter(client -> CNP.equals(client.getCNP()))
+                .findAny()
+                .orElse(null);
 
         return user;
     }

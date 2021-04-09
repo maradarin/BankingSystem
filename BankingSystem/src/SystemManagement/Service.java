@@ -1,4 +1,4 @@
-package BankingSystem;
+package SystemManagement;
 
 import javax.xml.crypto.Data;
 import java.util.List;
@@ -132,8 +132,7 @@ public class Service {
     }
 
     protected void updatePIN(String IBAN) {
-        Scanner scAux = new Scanner(System.in);
-        Account account = DataBase.getAccountFromIBAN(IBAN);
+        Scanner scAux = new Scanner(System.in);Account account = DataBase.getAccountFromIBAN(IBAN);
 
         if(account instanceof CurrentAccount) {
             System.out.println("Introduceti noul PIN: ");
@@ -206,5 +205,5 @@ public class Service {
         Account account = DataBase.getAccountFromIBAN(IBAN);
         account.printTransactionLogs();
     }
-    
+
 }

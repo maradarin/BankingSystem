@@ -1,4 +1,4 @@
-package BankingSystem;
+package SystemManagement;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;

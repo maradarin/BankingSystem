@@ -1,4 +1,6 @@
-package BankingSystem;
+package SystemManagement;
+
+import UtilityFunctions.CodeGenerators;
 
 import java.util.Iterator;
 import java.util.List;
@@ -12,59 +14,12 @@ public class CurrentAccount extends Account {
 
         // Deschiderea unui cont curent presupune atasarea automata a unui
         // card de credit pentru care vom genera un cod de 15 cifre
-        Long cardNumber = this.generateCardNumber();
+        Long cardNumber = CodeGenerators.generateCardNumber(this.getBank().getAccountNumbers());
         this.creditCard = new CreditCard(cardNumber.toString(), "", 0f, this);
     }
 
     protected CreditCard getCreditCard() {
         return creditCard;
-    }
-
-    protected Long generateCardNumber() {
-        boolean isUnique = false;
-        long maxKey = 0L;
-        while(isUnique != true) {
-            boolean next = false;
-            maxKey = ThreadLocalRandom.current().nextLong(10000000000000L, 99999999999999L + 1);
-
-            Iterator<Long> it = this.getBank().getAccountNumbers().iterator();
-            while(it.hasNext()) {
-                long maxKeylong = maxKey;
-                if(it.next() == maxKeylong) {
-                    next = true;
-                    break;
-                }
-            }
-
-            if(next == false) {
-                isUnique = true;
-                break;
-            }
-        }
-        long reversedKey = 0L;
-        long copyKey = maxKey;
-        int sum = 0;
-        boolean evenPos = true;
-        while(copyKey != 0) {
-            reversedKey = reversedKey * 10 + copyKey % 10;
-            copyKey /= 10;
-        }
-        while(reversedKey != 0) {
-            long digit = reversedKey % 10;
-            if(evenPos == true) {
-                digit = digit * 2;
-                if(digit > 9) {
-                    digit -= 9;
-                }
-            }
-            sum += digit;
-            reversedKey /= 10;
-            evenPos = !evenPos;
-        }
-
-        long luhnKey = 0L;
-        luhnKey = 4 * (10 ^ 16) +  maxKey * 10 + sum % 10;
-        return luhnKey;
     }
 
     // In cazul unui cont curent, extragerea se poate

@@ -38,7 +38,7 @@ public class CreditCard {
             } else {
                 this.currentAccount.setCurrentBalance(currentBalance - amount);
 
-                AccountStatement accountStatement = new AccountStatement(currentAccount, "24-11-2020", "Cumparare POS", "Debit", amount);
+                AccountStatement accountStatement = new AccountStatement("24-11-2020", "Cumparare POS", "Debit", amount);
                 this.currentAccount.getAccountStatements().add(accountStatement);
                 System.out.println("Achitarea a fost realizata cu succes!");
             }
@@ -75,10 +75,10 @@ public class CreditCard {
             if (amount <= currentBalance) {
                 accountTransfer.setCurrentBalance(transferBalance + amount);
 
-                AccountStatement accountStatement = new AccountStatement(currentAccount, "24-Nov-2020", "Transfer bancar", "Debit", amount);
+                AccountStatement accountStatement = new AccountStatement("24-Nov-2020", "Transfer bancar", "Debit", amount);
                 this.currentAccount.addAccountStatement(accountStatement);
 
-                AccountStatement transferStatement = new AccountStatement(accountTransfer, "24-Nov-2020", "Incasare", "Debit", amount);
+                AccountStatement transferStatement = new AccountStatement("24-Nov-2020", "Incasare", "Debit", amount);
                 accountTransfer.addAccountStatement(transferStatement);
 
                 TransactionLog transactionLogSend = new TransactionLog(this.currentAccount, accountTransfer, "24 Nov 2020", "", amount);

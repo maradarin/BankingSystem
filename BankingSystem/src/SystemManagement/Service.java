@@ -1,8 +1,15 @@
 package SystemManagement;
 
 import javax.xml.crypto.Data;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 // Singleton
 // Asigurarea faptului ca aceasta clasa va fi instantiata doar o data
@@ -21,8 +28,22 @@ public class Service {
         return single_instance;
     }
 
-    public List<Bank> availableBanks() {
-        return DataBase.getBanks();
+    public void loadAvailableCountryCodes() {
+        // am modificat inclusiv citirea codurilor de tara
+        // inainte, erau declarate in baza de date, acum sunt incarcate din csv
+        // si salvate in baza de date
+        try {
+            List<String[]> lines = Files.readAllLines(Paths.get("data/countryCodes.csv")).stream()
+                    .map(line -> line.split(","))
+                    .collect(Collectors.toList());
+
+            for(String[] line : lines) {
+                DataBase.countryCodes.put(line[0], line[1]);
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void loadAvailableBanks() {
@@ -48,6 +69,11 @@ public class Service {
         userBRD.openAccount("Savings", "BRD", "France");
 
         User userCiti = new User("1234567890002", "John", "Doe", "14-Apr-2000", "0711111113");
+    }
+
+    public void writeInAuditLog(FileWriter csvWriter, String action) throws IOException {
+        String timeStamp = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date());
+        csvWriter.append(action + " - " + timeStamp + "\n");
     }
 
     public void dropDownBanks(boolean withHeader) {
@@ -104,7 +130,7 @@ public class Service {
             bank.addClient(client);
         }
         else {
-            client = new User(user.getCNP(), user.getName(), user.getSurname(), user.getDateOfBirth(), user.getPhoneNumber());
+            client = user;
         }
 
         System.out.println();
@@ -112,7 +138,6 @@ public class Service {
         String type = scAux.nextLine();
 
         client.openAccount(type, bank.getName(), bank.getCountry());
-
     }
 
     public void deposit(String IBAN) {
@@ -155,7 +180,8 @@ public class Service {
         }
     }
 
-    protected void accountStatement(String bankName, String countryName, String CNP) {
+    protected void printAccountStatement(String bankName, String countryName, String CNP, GenericInterface<AccountStatement> accStatementReader, FileWriter csvWriter) throws IOException {
+        String timeStamp = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date());
         Bank bank = DataBase.getBankByNames(bankName, countryName);
         User user = bank.findUser(CNP);
         Scanner scAux = new Scanner(System.in);
@@ -164,8 +190,11 @@ public class Service {
         int selectedAccount = scAux.nextInt();
         if(selectedAccount <= user.getAccounts().size()) {
             Account account = user.getAccounts().get(selectedAccount - 1);
+            csvWriter.append("Extrasul de cont pentru contul cu IBAN-ul: " + account.getIBAN() + ", deschis la banca " + account.getBank().getName() + " si detinut de " + account.getUser().getName() + " " + account.getUser().getSurname() + "\n");
+            csvWriter.append("Data raportului: " + timeStamp);
             for (AccountStatement accountStatement : account.getAccountStatements()) {
                 accountStatement.print();
+                accStatementReader.writeToCSV(accountStatement, csvWriter);
             }
         }
         else {

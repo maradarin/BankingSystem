@@ -14,6 +14,10 @@ public class User {
     // Un client poate avea conturi multiple
     private List<Account> accounts = new ArrayList<Account>();
 
+    public User() {
+
+    }
+
     // Constructor: contine datele personale + numele bancii si tara unde isi deschide cont
     public User(String cnp, String name, String surname, String dateOfBirth, String phoneNumber) {
         this.CNP = cnp;
@@ -22,6 +26,17 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.phoneNumber = phoneNumber;
 
+        DataBase.addUser(this);
+    }
+
+    public User(String[] values) {
+        this.CNP = values[0];
+        this.name = values[1];
+        this.surname = values[2];
+        this.dateOfBirth = values[3];
+        this.phoneNumber = values[4];
+
+        DataBase.addUser(this);
     }
 
     protected String getCNP() {
@@ -56,34 +71,22 @@ public class User {
         // Identificam instanta bancii unde isi deschide cont
         bank = DataBase.getBankByNames(bankName, countryName);
 
-        // Verificam daca User-ul este deja client al bancii unde vrea sa-si deschida cont
-        boolean clientExists = false;
-        for(User client : bank.getClients()) {
-            if(client.getCNP() == this.getCNP()) {
-                clientExists = true;
-                break;
-            }
-        }
-
-        // Daca este client nou, il adaugam in lista de clienti a bancii respective
-        if(clientExists == false) {
-            bank.addClient(this);
-        }
+        // Verificarea daca acest user este deja client sau nu
+        // se va face in metoda apelata
+        bank.addClient(this);
 
         // Contul de deschis
         Account account;
 
         // Alegerea pachetului de servicii
-        // Cont de economii
-        if(type == "Savings") {
-            //Upcasting
+        //Upcasting
+        if(type.toLowerCase().equals("savings")) {
+            // Cont de economii
             account = new SavingsAccount(this, bank);
         }
-        // Cont curent
         else {
             // Cont curent
             account = new CurrentAccount(this, bank);
-
         }
 
         // Adaugam contul la lista de conturi deschise de utilizatorul curent
@@ -98,5 +101,16 @@ public class User {
                 .orElse(null);
 
         return account;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "CNP= " + CNP +
+                ", name= " + name +
+                ", surname= " + surname +
+                ", dateOfBirth= " + dateOfBirth +
+                ", phoneNumber= " + phoneNumber +
+                '}' + "\n";
     }
 }

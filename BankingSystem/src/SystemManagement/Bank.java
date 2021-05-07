@@ -1,5 +1,8 @@
 package SystemManagement;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -49,6 +52,24 @@ public class Bank {
         return clients;
     }
 
+    public void printClients(GenericInterface<User> userReader, FileWriter csvWriterClient) throws IOException {
+        String timeStamp = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date());
+        csvWriterClient.append("_________________________________\n");
+        csvWriterClient.append("Clientii bancii " + this.name + " la momentul: " + timeStamp + "\n");
+        for (User client : this.getClients()) {
+            String additional = "";
+            System.out.println(client.getName() + " - " + client.getSurname() + " - " + client.getCNP());
+            for(Account account : client.getAccounts()) {
+                if(account instanceof CurrentAccount) {
+                    additional = ((CurrentAccount) account).getCreditCard().getPIN();
+                }
+                userReader.writeToCSV(client, csvWriterClient);
+                System.out.println("    - " + account.getIBAN() + " - " + account.getCurrentBalance() + " - " + additional);
+            }
+            System.out.println("____________________________________");
+        }
+    }
+
     // Getter pentru numerele de cont
     protected Set<Long> getAccountNumbers() {
         return accountNumbers;
@@ -61,7 +82,16 @@ public class Bank {
 
     // Metoda de adaugare a unui client
     protected void addClient(User client) {
-        this.clients.add(client);
+
+        // Se face o verificare aditionala pt a vedea daca user-ul
+        // de adaugat este deja client curent, sau nu
+        try {
+            User user = this.clients.stream().filter(clientAux -> clientAux.getCNP() == client.getCNP()).findAny().get();
+        }
+        catch (Exception e) {
+            // Client nou, va fi adaugat
+            this.clients.add(client);
+        }
     }
 
     protected User findUser(String CNP) {
@@ -71,5 +101,14 @@ public class Bank {
                 .orElse(null);
 
         return user;
+    }
+
+    @Override
+    public String toString() {
+        return "Bank {" +
+                "country= " + country +
+                ", name=" + name +
+                ", BIC=" + BIC +
+                '}' + "\n";
     }
 }

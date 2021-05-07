@@ -1,15 +1,50 @@
 package SystemManagement;
 
-import javax.xml.crypto.Data;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
-public class Main {
-    public static void main(String[] args) {
-        Service service = Service.launchService();
-        service.loadAvailableBanks();
-        service.loadAvailableClients();
 
+public class Main {
+    public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+        // unica instantiere a clasei de serviciu care
+        // gestioneaza rezolvarea cerintelor din meniu
+        Service service = Service.launchService();
+        service.loadAvailableCountryCodes();
+
+        // unica instanta de citire pt banca
+        GenericInterface<Bank> bankReader = GenericSingleton.instance();
+        bankReader.readFromCSV(Bank.class);
+        // varianta din etapa 1
+        //service.loadAvailableBanks();
+
+        // unica instanta de citire a clientilor
+        GenericInterface<User> userReader = GenericSingleton.instance();
+        userReader.readFromCSV(User.class);
+        // varianta din etapa 1
+        //service.loadAvailableClients();
+
+        // unica instanta de citire pt conturile clientilor
+        GenericInterface<Account> accReader = GenericSingleton.instance();
+        accReader.readFromCSV(Account.class);
+
+        // unica instanta de citire a extraselor de conturi
+        GenericInterface<AccountStatement> accStatementReader = GenericSingleton.instance();
+        accStatementReader.readFromCSV(AccountStatement.class);
+
+        File file = new File("auditLog.csv");
+        FileWriter csvWriter = new FileWriter(file);
+
+        File fileClient = new File("output/clients.csv");
+        FileWriter csvWriterClient = new FileWriter(fileClient);
+
+        File fileAccStatement = new File("output/accountStatements.csv");
+        FileWriter csvWriterAccStatement = new FileWriter(fileAccStatement);
+
+        // verificarea incarcarii datelor din banks.csv
         System.out.println(DataBase.getBankByNames("ING", "Romania"));
+        // verificarea incarcarii datelor din clients.csv
         System.out.println(DataBase.findClientByCNP("ING", "Romania", "1234567890000"));
 
         boolean terminateService = false;
@@ -44,6 +79,8 @@ public class Main {
                     String CNP = sc.nextLine();
                     service.openAccount(selectedBank, CNP);
 
+                    service.writeInAuditLog(csvWriter, "Deschidere cont");
+
                     break;
                 }
                 case 2: {
@@ -51,6 +88,8 @@ public class Main {
                     System.out.println("Codul IBAN: ");
                     String IBAN = sc.nextLine();
                     service.deposit(IBAN);
+
+                    service.writeInAuditLog(csvWriter, "Depunere bani in cont");
 
                     break;
                 }
@@ -69,6 +108,8 @@ public class Main {
                     float amount = sc.nextFloat();
                     service.withdraw(account, PIN, amount, "24-Nov-2020");
 
+                    service.writeInAuditLog(csvWriter, "Retragere bani din cont");
+
                     break;
                 }
                 case 4: {
@@ -79,6 +120,8 @@ public class Main {
                     String IBAN2 = sc.nextLine();
                     service.transfer(IBAN1, IBAN2);
 
+                    service.writeInAuditLog(csvWriter, "Transfer bancar");
+
                     break;
                 }
                 case 5: {
@@ -86,10 +129,15 @@ public class Main {
                     System.out.println("Introduceti codul IBAN: ");
                     String IBAN = sc.nextLine();
                     service.pay(IBAN);
+
+                    service.writeInAuditLog(csvWriter, "Achitare factura");
+
                     break;
                 }
                 case 6: {
                     service.dropDownBanks(false);
+
+                    service.writeInAuditLog(csvWriter, "Afisarea bancilor existente in baza de date");
 
                     break;
                 }
@@ -101,20 +149,14 @@ public class Main {
                     String countryName = sc.nextLine();
                     Bank bank = DataBase.getBankByNames(bankName, countryName);
                     if(bank != null) {
-                        for(User client : bank.getClients()) {
-                            String additional = "";
-                            System.out.println(client.getName() + " - " + client.getSurname() + " - " + client.getCNP());
-                            for(Account account : client.getAccounts()) {
-                                if(account instanceof CurrentAccount) {
-                                    additional = ((CurrentAccount) account).getCreditCard().getPIN();
-                                }
-                                System.out.println("    - " + account.getIBAN() + " - " + account.getCurrentBalance() + " - " + additional);
-                            }
-                            System.out.println("____________________________________");
-                        }
+                        bank.printClients(userReader, csvWriterClient);
+
+                        service.writeInAuditLog(csvWriter, "Afisarea clientilor inregistrati la banca " + bankName);
                     }
                     else {
                         System.out.println("Banca nu a fost gasita!");
+
+                        service.writeInAuditLog(csvWriter, "Esuarea afisarii clientilor inregistrati la banca " + bankName);
                     }
                     break;
                 }
@@ -123,6 +165,9 @@ public class Main {
                     System.out.println("Codul IBAN: ");
                     String IBAN = sc.nextLine();
                     service.updatePIN(IBAN);
+
+                    service.writeInAuditLog(csvWriter, "Setarea unui nou PIN");
+
                     break;
                 }
                 case 9: {
@@ -135,7 +180,10 @@ public class Main {
                     System.out.println("CNP-ul clientului: ");
                     String CNP = sc.nextLine();
 
-                    service.accountStatement(bankName, countryName, CNP);
+                    service.printAccountStatement(bankName, countryName, CNP, accStatementReader, csvWriterAccStatement);
+
+                    service.writeInAuditLog(csvWriter, "Afisarea extrasului de cont");
+
                     break;
                 }
                 case 10: {
@@ -143,13 +191,28 @@ public class Main {
                     System.out.println("Codul IBAN: ");
                     String IBAN = sc.nextLine();
                     service.printTransactionLogs(IBAN);
+
+                    service.writeInAuditLog(csvWriter, "Afisarea raportului de tranzactii");
+
                     break;
                 }
                 case 11: {
                     terminateService = true;
+
+                    service.writeInAuditLog(csvWriter, "Iesirea din Meniu");
+                    csvWriter.flush();
+                    csvWriter.close();
+
+                    csvWriterClient.flush();
+                    csvWriterClient.close();
+
+                    csvWriterAccStatement.flush();
+                    csvWriterAccStatement.close();
+
                     break;
                 }
             }
         } while (!terminateService);
+
     }
 }

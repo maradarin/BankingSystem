@@ -33,6 +33,7 @@ abstract public class Account {
         // Se salveaza conturile deschise la fiecare banca in functie de numarul
         // de cont (cheie primara)
         this.bank.addAccountNumber(this.accountNumber);
+        this.bank.addClient(this.user);
 
         Integer randomCheck = ThreadLocalRandom.current().nextInt(100, 999 + 1);
         this.IBAN = DataBase.getCountryCode(this.bank.country) + randomCheck.toString() + this.bank.getBIC() + this.accountNumber;

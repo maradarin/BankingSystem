@@ -31,7 +31,7 @@ public class CurrentAccount extends Account {
                 this.setCurrentBalance(this.getCurrentBalance() - amount);
 
                 // Tranzactia va fi salvata in extrasul de cont
-                AccountStatement accountStatement = new AccountStatement(this, currentDate, "Retragere numerar", "Debit", amount);
+                AccountStatement accountStatement = new AccountStatement(currentDate, "Retragere numerar", "Debit", amount);
                 this.addAccountStatement(accountStatement);
                 System.out.println("Retragere realizata cu succes! Mai aveti in cont: " + this.getCurrentBalance() + " " + this.getCurrency());
             } else {

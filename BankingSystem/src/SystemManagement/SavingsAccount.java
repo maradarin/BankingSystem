@@ -18,8 +18,16 @@ public class SavingsAccount extends Account {
         this.period = period;
     }
 
+    public String getPeriod() {
+        return period;
+    }
+
     public void setInterestRate(float interestRate) {
         this.interestRate = interestRate;
+    }
+
+    public float getInterestRate() {
+        return interestRate;
     }
 
     public void setJoint(Boolean joint) {
@@ -38,7 +46,11 @@ public class SavingsAccount extends Account {
         this.openDate = openDate;
     }
 
-    public void setAccountOptions(String period, int spanOfPeriod, float interestRate, String openDate, Boolean isJoint) {
+    public String getOpenDate() {
+        return openDate;
+    }
+
+    public void setAccountOptions(String period, float interestRate, String openDate, Boolean isJoint) {
         this.setPeriod(period);
         this.setInterestRate(interestRate);
         this.setOpenDate(openDate);

@@ -10,6 +10,7 @@ public class Bank {
     // Atribute final, se pot schimba doar prin inchiderea
     // sediului central, adica eliminarea definitiva a instantei
     // din baza de date
+    protected String id;
     protected final String country;
     protected final String name;
     protected final String BIC;
@@ -33,6 +34,24 @@ public class Bank {
 
         // Adaugam in baza de date banca
         DataBase.addBank(this);
+    }
+
+    public Bank(String id, String country, String name, String BIC) {
+        this.id = id;
+        this.country = country;
+        this.name = name;
+        this.BIC = BIC;
+
+        // Adaugam in baza de date banca
+        DataBase.addBank(this);
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getBIC() {
@@ -106,7 +125,8 @@ public class Bank {
     @Override
     public String toString() {
         return "Bank {" +
-                "country= " + country +
+                "id= " + id +
+                ", country= " + country +
                 ", name=" + name +
                 ", BIC=" + BIC +
                 '}' + "\n";

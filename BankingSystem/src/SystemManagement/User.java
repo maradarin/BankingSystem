@@ -3,8 +3,10 @@ package SystemManagement;
 import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class User {
+    private String id;
     private String CNP;
     private String name;
     private String surname;
@@ -14,12 +16,27 @@ public class User {
     // Un client poate avea conturi multiple
     private List<Account> accounts = new ArrayList<Account>();
 
-    public User() {
+    public void setId(String id) {
+        this.id = id;
+    }
 
+    protected String getId() {
+        return id;
     }
 
     // Constructor: contine datele personale + numele bancii si tara unde isi deschide cont
-    public User(String cnp, String name, String surname, String dateOfBirth, String phoneNumber) {
+    public User(String cnp, String name, String surname, String phoneNumber, String dateOfBirth) {
+        this.CNP = cnp;
+        this.name = name;
+        this.surname = surname;
+        this.dateOfBirth = dateOfBirth;
+        this.phoneNumber = phoneNumber;
+
+        DataBase.addUser(this);
+    }
+
+    public User(String id, String cnp, String name, String surname, String phoneNumber, String dateOfBirth) {
+        this.id = id;
         this.CNP = cnp;
         this.name = name;
         this.surname = surname;
@@ -30,6 +47,7 @@ public class User {
     }
 
     public User(String[] values) {
+        this.id = UUID.randomUUID().toString();
         this.CNP = values[0];
         this.name = values[1];
         this.surname = values[2];
@@ -42,21 +60,44 @@ public class User {
     protected String getCNP() {
         return CNP;
     }
+    protected User CNP(String CNP) {
+        this.CNP = CNP;
+        return this;
+    }
 
     protected String getName() {
         return name;
+    }
+    protected User name(String name) {
+        this.name = name;
+        return this;
     }
 
     protected String getDateOfBirth() {
         return dateOfBirth;
     }
+    protected User dateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+        return this;
+    }
 
     protected String getPhoneNumber() {
         return phoneNumber;
     }
+    protected User phoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+        return this;
+    }
+    protected void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
     protected String getSurname() {
         return surname;
+    }
+    protected User surname(String surname) {
+        this.surname = surname;
+        return this;
     }
 
     // Getter pentru lista de conturi
@@ -112,5 +153,6 @@ public class User {
                 ", dateOfBirth= " + dateOfBirth +
                 ", phoneNumber= " + phoneNumber +
                 '}' + "\n";
+        //return CNP;
     }
 }

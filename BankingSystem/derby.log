@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Fri May 28 02:05:52 EEST 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.15.2.0 - (1873585): instance a816c00e-0179-b013-b739-00000f384758 
+on database directory C:\Users\Mara\OneDrive\Desktop\facultate\AN II\Semestrul 2\PAO\BankingSystem\bankingSystemDB with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@3764951d 
+Loaded from file:/C:/Users/Mara/Desktop/db-derby-10.15.2.0-bin/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=15+36-1562
+user.dir=C:\Users\Mara\OneDrive\Desktop\facultate\AN II\Semestrul 2\PAO\BankingSystem
+os.name=Windows 10
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
